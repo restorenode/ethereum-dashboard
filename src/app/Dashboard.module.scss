@@ -1,0 +1,54 @@
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.chart {
+  background: black;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.recentBlocks {
+  background: black;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 20px;
+  color: white;
+}
+
+.title {
+  text-align: center;
+  color: white;
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.erc20Header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inputBox {
+  margin-left: 20px;
+  padding: 5px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #aaa;
+}
