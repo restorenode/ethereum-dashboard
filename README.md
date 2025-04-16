@@ -6,7 +6,7 @@ Built with Next.js and TypeScript, this app fetches on-chain Ethereum data and
 displays it in a clean, responsive interface using SCSS modules and Recharts.
 
 <div align="center">
-  <img src="assets/ethereum-dashboard.gif" width="800">
+  <img src="assets/ethereum-dashboard.gif" width="600">
 </div>
 
 ## Features
