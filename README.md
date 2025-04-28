@@ -1,4 +1,4 @@
-# Ethereum Insights Dashboard
+# Real-Time Ethereum Dashboard
 
 An interactive dashboard for visualizing real-time Ethereum network data.
 
