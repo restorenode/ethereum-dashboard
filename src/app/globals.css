@@ -1,13 +1,15 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --cyber-dark: #0a0a0a;
+  --cyber-darker: #050505;
+  --cyber-surface: #1a1a1a;
+  --cyber-surface-light: #252525;
+  --cyber-cyan: #00ffff;
+  --cyber-magenta: #ff00ff;
+  --cyber-purple: #9d00ff;
+  --cyber-green: #00ff41;
+  --cyber-blue: #00bfff;
+  --cyber-yellow: #ffff00;
+  --foreground: #e0e0e0;
 }
 
 html,
@@ -18,10 +20,31 @@ body {
 
 body {
   color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: linear-gradient(135deg, var(--cyber-darker) 0%, var(--cyber-dark) 50%, #0f0f1a 100%);
+  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  min-height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 255, 255, 0.03) 2px,
+      rgba(0, 255, 255, 0.03) 4px
+    );
+  pointer-events: none;
+  z-index: 1;
 }
 
 * {
@@ -35,8 +58,6 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+html {
+  color-scheme: dark;
 }

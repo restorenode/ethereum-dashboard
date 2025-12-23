@@ -23,7 +23,7 @@ export default function Home() {
     const fetchBlocks = async () => {
       const latestBlock = await alchemy.core.getBlockNumber();
       const blockPromises = [];
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 5; i++) {
         blockPromises.push(alchemy.core.getBlock(latestBlock - i));
       }
       const blockData = await Promise.all(blockPromises);
@@ -43,7 +43,7 @@ export default function Home() {
           return prevBlocks;
         }
 
-        const updatedBlocks = [newBlock, ...prevBlocks.slice(0, 9)];
+        const updatedBlocks = [newBlock, ...prevBlocks.slice(0, 4)];
 
         updateBaseFeeChart(updatedBlocks);
         updateGasUsageChart(updatedBlocks);
@@ -63,7 +63,20 @@ export default function Home() {
     const data = blockData.map((block) => Number(block.baseFeePerGas) / 1e9).reverse();
     setBaseFeeData({
       labels,
-      datasets: [{ label: "Base Fee (Gwei)", data, borderColor: "rgba(75,192,192,1)", borderWidth: 2 }],
+      datasets: [{ 
+        label: "Base Fee (Gwei)", 
+        data, 
+        borderColor: "#00ffff",
+        backgroundColor: "rgba(0, 255, 255, 0.1)",
+        borderWidth: 3,
+        pointBackgroundColor: "#00ffff",
+        pointBorderColor: "#ffffff",
+        pointRadius: 7,
+        pointHoverRadius: 10,
+        pointHoverBorderWidth: 3,
+        tension: 0.4,
+        fill: true,
+      }],
     });
   };
 
@@ -72,7 +85,20 @@ export default function Home() {
     const data = blockData.map((block) => (block.gasUsed / block.gasLimit) * 100).reverse();
     setGasUsageData({
       labels,
-      datasets: [{ label: "Gas Usage (%)", data, borderColor: "rgba(255,99,132,1)", borderWidth: 2 }],
+      datasets: [{ 
+        label: "Gas Usage (%)", 
+        data, 
+        borderColor: "#ff00ff",
+        backgroundColor: "rgba(255, 0, 255, 0.1)",
+        borderWidth: 3,
+        pointBackgroundColor: "#ff00ff",
+        pointBorderColor: "#ffffff",
+        pointRadius: 7,
+        pointHoverRadius: 10,
+        pointHoverBorderWidth: 3,
+        tension: 0.4,
+        fill: true,
+      }],
     });
   };
 
@@ -99,8 +125,16 @@ export default function Home() {
         {
           label: `Transfer Volume (${token.slice(0, 6)}...)`,
           data,
-          borderColor: "rgba(54,162,235,1)",
-          borderWidth: 2,
+          borderColor: "#9d00ff",
+          backgroundColor: "rgba(157, 0, 255, 0.1)",
+          borderWidth: 3,
+          pointBackgroundColor: "#9d00ff",
+          pointBorderColor: "#ffffff",
+          pointRadius: 7,
+          pointHoverRadius: 10,
+          pointHoverBorderWidth: 3,
+          tension: 0.4,
+          fill: true,
         },
       ],
     });
