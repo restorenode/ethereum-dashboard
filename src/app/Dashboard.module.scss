@@ -1,122 +1,250 @@
-.container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto;
-  gap: 24px;
-  padding: 24px;
-  max-width: 1400px;
+.page {
+  min-height: 100vh;
+  position: relative;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.hi {
+  color: var(--text-hi);
+}
+
+.acc {
+  color: var(--acc);
+}
+
+/* ── top bar ─────────────────────────────────────────── */
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 32px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+  font-size: 12px;
+  color: #6b6b6b;
+}
+
+.crumbs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  width: 8px;
+  height: 8px;
+  background: var(--acc);
+  display: inline-block;
+}
+
+.brand {
+  color: var(--text-hi);
+  font-weight: 500;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.liveBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: 1px solid #1e1e1e;
+  color: var(--text);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  padding: 5px 10px;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #3a3a3a;
+  }
+}
+
+.dotLive,
+.dotPaused {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dotLive {
+  background: var(--acc);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.dotPaused {
+  background: #555;
+}
+
+/* ── hero ────────────────────────────────────────────── */
+
+.main {
+  max-width: 1440px;
   margin: 0 auto;
-  position: relative;
-  z-index: 2;
-
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 16px;
-  }
+  padding: 40px 32px 32px;
 }
 
-.fullWidth {
-  grid-column: 1 / -1;
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 28px;
 }
 
-.chart {
-  background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 26, 0.95) 100%);
-  border: 2px solid var(--cyber-cyan);
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 
-    0 0 20px rgba(0, 255, 255, 0.3),
-    inset 0 0 20px rgba(0, 255, 255, 0.05);
-  position: relative;
-  transition: all 0.3s ease;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, var(--cyber-cyan), var(--cyber-purple), var(--cyber-magenta), var(--cyber-cyan));
-    border-radius: 12px;
-    z-index: -1;
-    opacity: 0.5;
-    filter: blur(8px);
-    animation: borderGlow 3s ease infinite;
-  }
-
-  &:hover {
-    box-shadow: 
-      0 0 30px rgba(0, 255, 255, 0.5),
-      inset 0 0 30px rgba(0, 255, 255, 0.1);
-    transform: translateY(-2px);
-  }
-}
-
-@keyframes borderGlow {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 0.8; }
-}
-
-.recentBlocks {
-  background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(15, 15, 26, 0.95) 100%);
-  border: 2px solid var(--cyber-green);
-  border-radius: 12px;
-  padding: 24px;
-  color: var(--foreground);
-  box-shadow: 
-    0 0 20px rgba(0, 255, 65, 0.3),
-    inset 0 0 20px rgba(0, 255, 65, 0.05);
-  position: relative;
-  transition: all 0.3s ease;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, var(--cyber-green), var(--cyber-cyan), var(--cyber-green));
-    border-radius: 12px;
-    z-index: -1;
-    opacity: 0.4;
-    filter: blur(8px);
-    animation: borderGlowGreen 3s ease infinite;
-  }
-
-  &:hover {
-    box-shadow: 
-      0 0 30px rgba(0, 255, 65, 0.5),
-      inset 0 0 30px rgba(0, 255, 65, 0.1);
-    transform: translateY(-2px);
-  }
-}
-
-@keyframes borderGlowGreen {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.7; }
+.prompt {
+  color: #5a5a5a;
+  font-size: 12px;
+  margin-bottom: 12px;
 }
 
 .title {
-  text-align: center;
-  color: white;
-  font-size: 36px;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-.erc20Header {
+  margin: 0;
+  font-size: 44px;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: var(--text-strong);
   display: flex;
   align-items: center;
-  justify-content: space-between;
 }
 
-.inputBox {
-  margin-left: 20px;
-  padding: 5px;
-  font-size: 14px;
-  border-radius: 4px;
-  border: 1px solid #aaa;
+.cursor {
+  display: inline-block;
+  width: 0.5em;
+  height: 0.82em;
+  margin-left: 12px;
+  background: var(--acc);
+  animation: blink 1.1s steps(1) infinite;
+}
+
+.meta {
+  font-size: 11px;
+  color: #5a5a5a;
+  letter-spacing: 0.08em;
+  text-align: right;
+  line-height: 1.7;
+}
+
+/* ── KPI strip ───────────────────────────────────────── */
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  margin-bottom: 1px;
+}
+
+.kpi {
+  background: var(--panel);
+  padding: 18px 20px;
+}
+
+.kpiLabel {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.kpiValue {
+  font-size: 26px;
+  color: var(--text-strong);
+  letter-spacing: -0.02em;
+}
+
+.kpiUnit {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.kpiSub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+/* ── panels ──────────────────────────────────────────── */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 560px), 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 16px;
+  font-size: 11px;
+  color: #444;
+}
+
+.scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.022) 0px,
+    rgba(255, 255, 255, 0.022) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+@media (max-width: 640px) {
+  .topbar {
+    padding: 12px 16px;
+  }
+
+  .main {
+    padding: 28px 16px 24px;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+
+  .meta {
+    text-align: left;
+  }
+}
+
+/* Keyframes live here, not in globals.css: CSS Modules renames the
+   animation names used in this file, so the keyframes must be renamed too. */
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
 }
