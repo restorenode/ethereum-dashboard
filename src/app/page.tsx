@@ -1,156 +1,141 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import alchemy from "@/lib/alchemy";
-import PageTitle from "@/app/components/PageTitle";
+import { useState } from "react";
+import { useBlocks, useNow, useTransferCounts, WINDOW } from "@/lib/chain";
+import { age, fmt, utcClock } from "@/lib/format";
 import RecentBlocks from "@/app/components/RecentBlocks";
-import Chart from "@/app/components/Chart";
-import ERC20Input from "@/app/components/ERC20Input";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend } from "chart.js";
-import { isAddress, id } from "ethers";
+import FeeChart from "@/app/components/FeeChart";
+import GasChart from "@/app/components/GasChart";
+import TransferVolume from "@/app/components/TransferVolume";
 import styles from "./Dashboard.module.scss";
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend);
+const BLOCK_TIME_S = 12;
 
 export default function Home() {
-  const [blocks, setBlocks] = useState([]);
-  const [baseFeeData, setBaseFeeData] = useState({ labels: [], datasets: [] });
-  const [gasUsageData, setGasUsageData] = useState({ labels: [], datasets: [] });
-  const [erc20Data, setErc20Data] = useState({ labels: [], datasets: [] });
-  const [tokenAddress, setTokenAddress] = useState("");
+  const [live, setLive] = useState(true);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [token, setToken] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchBlocks = async () => {
-      const latestBlock = await alchemy.core.getBlockNumber();
-      const blockPromises = [];
-      for (let i = 0; i < 5; i++) {
-        blockPromises.push(alchemy.core.getBlock(latestBlock - i));
-      }
-      const blockData = await Promise.all(blockPromises);
-      setBlocks(blockData);
-      updateBaseFeeChart(blockData);
-      updateGasUsageChart(blockData);
-      if (isAddress(tokenAddress)) updateERC20Chart(blockData, tokenAddress);
-    };
+  const now = useNow();
+  const { blocks, error } = useBlocks(live);
+  const transfers = useTransferCounts(token, blocks);
 
-    fetchBlocks();
+  const select = (n: number) => setSelected((s) => (s === n ? null : n));
+  // A selected block that has scrolled out of the window no longer counts.
+  const sel = blocks.some((b) => b.n === selected) ? selected : null;
 
-    alchemy.ws.on("block", async (blockNumber) => {
-      const newBlock = await alchemy.core.getBlock(blockNumber);
-
-      setBlocks((prevBlocks) => {
-        if (prevBlocks.find((block) => block?.number === newBlock?.number)) {
-          return prevBlocks;
-        }
-
-        const updatedBlocks = [newBlock, ...prevBlocks.slice(0, 4)];
-
-        updateBaseFeeChart(updatedBlocks);
-        updateGasUsageChart(updatedBlocks);
-        if (isAddress(tokenAddress)) updateERC20Chart(updatedBlocks, tokenAddress);
-
-        return updatedBlocks;
-      });
-    });
-
-    return () => {
-      alchemy.ws.removeAllListeners();
-    };
-  }, [tokenAddress]);
-
-  const updateBaseFeeChart = (blockData) => {
-    const labels = blockData.map((block) => block.number).reverse();
-    const data = blockData.map((block) => Number(block.baseFeePerGas) / 1e9).reverse();
-    setBaseFeeData({
-      labels,
-      datasets: [{ 
-        label: "Base Fee (Gwei)", 
-        data, 
-        borderColor: "#00ffff",
-        backgroundColor: "rgba(0, 255, 255, 0.1)",
-        borderWidth: 3,
-        pointBackgroundColor: "#00ffff",
-        pointBorderColor: "#ffffff",
-        pointRadius: 7,
-        pointHoverRadius: 10,
-        pointHoverBorderWidth: 3,
-        tension: 0.4,
-        fill: true,
-      }],
-    });
-  };
-
-  const updateGasUsageChart = (blockData) => {
-    const labels = blockData.map((block) => block.number).reverse();
-    const data = blockData.map((block) => (block.gasUsed / block.gasLimit) * 100).reverse();
-    setGasUsageData({
-      labels,
-      datasets: [{ 
-        label: "Gas Usage (%)", 
-        data, 
-        borderColor: "#ff00ff",
-        backgroundColor: "rgba(255, 0, 255, 0.1)",
-        borderWidth: 3,
-        pointBackgroundColor: "#ff00ff",
-        pointBorderColor: "#ffffff",
-        pointRadius: 7,
-        pointHoverRadius: 10,
-        pointHoverBorderWidth: 3,
-        tension: 0.4,
-        fill: true,
-      }],
-    });
-  };
-
-  const updateERC20Chart = async (blockData, token) => {
-    if (!token || typeof token !== "string" || !isAddress(token.trim())) return;
-
-    const labels = blockData.map((block) => block.number).reverse();
-    const dataPromises = blockData.map((block) =>
-      alchemy.core.getLogs({
-        fromBlock: block.number,
-        toBlock: block.number,
-        address: token.trim(),
-        topics: [id("Transfer(address,address,uint256)")],
-      })
-    );
-    const logsArray = await Promise.all(dataPromises);
-    const data = logsArray.map((logs) =>
-      logs.reduce((sum, log) => sum + parseInt(log.data, 16), 0) / 1e18
-    ).reverse();
-
-    setErc20Data({
-      labels,
-      datasets: [
-        {
-          label: `Transfer Volume (${token.slice(0, 6)}...)`,
-          data,
-          borderColor: "#9d00ff",
-          backgroundColor: "rgba(157, 0, 255, 0.1)",
-          borderWidth: 3,
-          pointBackgroundColor: "#9d00ff",
-          pointBorderColor: "#ffffff",
-          pointRadius: 7,
-          pointHoverRadius: 10,
-          pointHoverBorderWidth: 3,
-          tension: 0.4,
-          fill: true,
-        },
-      ],
-    });
-  };
+  const n = blocks.length;
+  const last = blocks[n - 1];
+  const prev = blocks[n - 2];
+  const dFee = last && prev && prev.fee > 0 ? ((last.fee - prev.fee) / prev.fee) * 100 : null;
+  const totTx = blocks.reduce((a, b) => a + b.txs, 0);
+  const avgGas = n ? blocks.reduce((a, b) => a + b.gas, 0) / n : null;
+  const nextIn = live && last && now !== null ? Math.max(0, BLOCK_TIME_S - Math.floor((now - last.ts) / 1000)) : null;
+  const feeWord = dFee === null ? "" : dFee > 0 ? "fees rising" : dFee < 0 ? "fees falling" : "unchanged";
 
   return (
-    <div>
-      <PageTitle />
-      <div className={styles.container}>
-        <RecentBlocks blocks={blocks} />
-        <Chart title="Base Fee per Block" data={baseFeeData} />
-        <Chart title="Gas Usage Ratio" data={gasUsageData} />
-        <Chart title="ERC20 Transfer Volume" data={erc20Data}>
-          <ERC20Input value={tokenAddress} onChange={(e) => setTokenAddress(e.target.value)} />
-        </Chart>
-      </div>
+    <div className={styles.page}>
+      <header className={styles.topbar}>
+        <div className={styles.crumbs}>
+          <span className={styles.logo} />
+          <span className={styles.brand}>eth.insights</span>
+          <span>/</span>
+          <span>mainnet</span>
+          <span>/</span>
+          <span>overview</span>
+        </div>
+        <div className={styles.status}>
+          <button className={styles.liveBtn} onClick={() => setLive((l) => !l)} aria-pressed={!live}>
+            <span className={live ? styles.dotLive : styles.dotPaused} />
+            <span>{live ? "LIVE" : "PAUSED"}</span>
+          </button>
+          <span className={styles.nowrap}>
+            blk <span className={styles.hi}>{last ? last.n : "—"}</span>
+          </span>
+          <span className={`${styles.hi} ${styles.nowrap}`}>{utcClock(now)}</span>
+        </div>
+      </header>
+
+      <main className={styles.main}>
+        <div className={styles.hero}>
+          <div>
+            <div className={styles.prompt}>
+              ~/ethereum <span className={styles.acc}>$</span> ./insights --watch --interval={BLOCK_TIME_S}s
+            </div>
+            <h1 className={styles.title}>
+              Ethereum Insights
+              <span className={styles.cursor} />
+            </h1>
+          </div>
+          <div className={styles.meta}>
+            <div>CHAIN_ID 1 · EIP-1559</div>
+            <div>CLICK A BLOCK TO INSPECT</div>
+          </div>
+        </div>
+
+        <section className={styles.kpis}>
+          <div className={styles.kpi}>
+            <div className={styles.kpiLabel}>BLOCK HEIGHT</div>
+            <div className={styles.kpiValue}>{last ? fmt(last.n) : "—"}</div>
+            <div className={styles.kpiSub}>{last ? `mined ${age(now ?? last.ts, last.ts)} ago` : "waiting for data"}</div>
+          </div>
+          <div className={styles.kpi}>
+            <div className={styles.kpiLabel}>BASE FEE</div>
+            <div className={styles.kpiValue}>
+              {last ? last.fee.toFixed(3) : "—"} <span className={styles.kpiUnit}>gwei</span>
+            </div>
+            <div className={styles.kpiSub}>
+              {dFee === null ? (
+                "—"
+              ) : (
+                <>
+                  <span style={{ color: dFee > 0 ? "var(--alt)" : "var(--acc)" }}>
+                    {dFee >= 0 ? "▲ +" : "▼ "}
+                    {dFee.toFixed(2)}%
+                  </span>{" "}
+                  {feeWord}
+                </>
+              )}
+            </div>
+          </div>
+          <div className={styles.kpi}>
+            <div className={styles.kpiLabel}>AVG GAS USED</div>
+            <div className={styles.kpiValue}>
+              {avgGas === null ? "—" : avgGas.toFixed(1)}
+              <span className={styles.kpiUnit}>%</span>
+            </div>
+            <div className={styles.kpiSub}>target 50.0%</div>
+          </div>
+          <div className={styles.kpi}>
+            <div className={styles.kpiLabel}>TRANSACTIONS</div>
+            <div className={styles.kpiValue}>{n ? fmt(totTx) : "—"}</div>
+            <div className={styles.kpiSub}>
+              last {n} blocks · {n ? fmt(Math.round(totTx / n)) : 0}/blk
+            </div>
+          </div>
+        </section>
+
+        <section className={styles.grid}>
+          <RecentBlocks
+            blocks={blocks}
+            now={now}
+            selected={sel}
+            error={error}
+            windowMax={WINDOW}
+            onSelect={select}
+          />
+          <FeeChart blocks={blocks} selected={sel} onSelect={select} />
+          <GasChart blocks={blocks} selected={sel} onSelect={select} />
+          <TransferVolume blocks={blocks} selected={sel} token={token} onRun={setToken} {...transfers} />
+        </section>
+
+        <footer className={styles.footer}>
+          <span>source: mainnet rpc · eth_getBlockByNumber · eth_getLogs</span>
+          <span className={styles.nowrap}>next block in {nextIn ?? "—"}s</span>
+        </footer>
+      </main>
+
+      <div className={styles.scanlines} aria-hidden />
     </div>
   );
 }

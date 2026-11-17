@@ -1,50 +1,20 @@
 :root {
-  --cyber-dark: #0a0a0a;
-  --cyber-darker: #050505;
-  --cyber-surface: #1a1a1a;
-  --cyber-surface-light: #252525;
-  --cyber-cyan: #00ffff;
-  --cyber-magenta: #ff00ff;
-  --cyber-purple: #9d00ff;
-  --cyber-green: #00ff41;
-  --cyber-blue: #00bfff;
-  --cyber-yellow: #ffff00;
-  --foreground: #e0e0e0;
+  --acc: #3dff8f;
+  --alt: #ff3b3b;
+  --bg: #030303;
+  --panel: #060606;
+  --line: #161616;
+  --text: #cfcfcf;
+  --text-strong: #f2f2f2;
+  --text-hi: #e8e8e8;
+  --muted: #5f5f5f;
+  --dim: #4f4f4f;
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  color: var(--foreground);
-  background: linear-gradient(135deg, var(--cyber-darker) 0%, var(--cyber-dark) 50%, #0f0f1a 100%);
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  position: relative;
-  min-height: 100vh;
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: 
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 255, 255, 0.03) 2px,
-      rgba(0, 255, 255, 0.03) 4px
-    );
-  pointer-events: none;
-  z-index: 1;
+/* Optional theme: set data-accent="red" on <html> to swap accent and alert. */
+[data-accent="red"] {
+  --acc: #ff3b3b;
+  --alt: #3dff8f;
 }
 
 * {
@@ -53,11 +23,64 @@ body::before {
   margin: 0;
 }
 
+html {
+  color-scheme: dark;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  background: var(--bg);
+}
+
+body {
+  min-height: 100vh;
+  color: var(--text);
+  background-color: var(--bg);
+  background-image: radial-gradient(#141414 1px, transparent 1px);
+  background-size: 22px 22px;
+  font-family: var(--font-mono), ui-monospace, Menlo, monospace;
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 a {
-  color: inherit;
+  color: var(--acc);
   text-decoration: none;
 }
 
-html {
-  color-scheme: dark;
+a:hover {
+  color: #ffffff;
+}
+
+input::placeholder {
+  color: #444;
+}
+
+::selection {
+  background: var(--acc);
+  color: #000;
+}
+
+button {
+  font: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #222;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #333;
 }
