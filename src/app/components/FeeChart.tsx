@@ -1,5 +1,5 @@
 import type { BlockRow } from "@/lib/chain";
-import { feeScale, showXLabel } from "@/lib/format";
+import { feeScale, shortBlock } from "@/lib/format";
 import Panel from "./Panel";
 import styles from "./Charts.module.scss";
 
@@ -80,11 +80,9 @@ export default function FeeChart({ blocks, selected, onSelect }: Props) {
                     background: isSel ? "var(--acc)" : "var(--panel)",
                   }}
                 />
-                {showXLabel(i, n, isSel, selected !== null) && (
-                  <span className={styles.xLabel} style={{ left: `${x(i)}%`, color: isSel ? "var(--acc)" : undefined }}>
-                    {b.n}
-                  </span>
-                )}
+                <span className={styles.xLabel} style={{ left: `${x(i)}%`, color: isSel ? "var(--acc)" : undefined }}>
+                  {shortBlock(b.n)}
+                </span>
               </div>
             );
           })}

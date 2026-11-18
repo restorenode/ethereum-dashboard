@@ -1,6 +1,8 @@
+/* Stretches to fill the panel so charts line up with the panel beside them. */
 .frame {
   position: relative;
-  height: 280px;
+  flex: 1;
+  min-height: 280px;
   margin: 24px 24px 16px 20px;
 }
 
