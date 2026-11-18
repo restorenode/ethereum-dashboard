@@ -1,5 +1,5 @@
 import type { BlockRow } from "@/lib/chain";
-import { showXLabel } from "@/lib/format";
+import { shortBlock } from "@/lib/format";
 import Panel from "./Panel";
 import styles from "./Charts.module.scss";
 
@@ -40,7 +40,7 @@ export default function GasChart({ blocks, selected, onSelect }: Props) {
           {blocks.length === 0 && <div className={styles.empty}>no data yet</div>}
 
           <div className={styles.bars}>
-            {blocks.map((b, i) => {
+            {blocks.map((b) => {
               const c = b.gas > 50 ? "var(--alt)" : "var(--acc)";
               const op = selected !== null && selected !== b.n ? 0.25 : 1;
               const h = Math.min(100, b.gas);
@@ -59,11 +59,9 @@ export default function GasChart({ blocks, selected, onSelect }: Props) {
                     {b.gas.toFixed(1)}
                   </span>
                   <div className={styles.bar} style={{ height: `${h}%`, background: c, opacity: op }} />
-                  {showXLabel(i, blocks.length, selected === b.n, selected !== null) && (
-                    <span className={styles.barLabel} style={{ color: selected === b.n ? "var(--acc)" : "#555" }}>
-                      {b.n}
-                    </span>
-                  )}
+                  <span className={styles.barLabel} style={{ color: selected === b.n ? "var(--acc)" : "#555" }}>
+                    {shortBlock(b.n)}
+                  </span>
                 </button>
               );
             })}

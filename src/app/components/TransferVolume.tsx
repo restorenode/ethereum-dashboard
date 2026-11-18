@@ -77,77 +77,81 @@ export default function TransferVolume({ blocks, selected, token, counts, status
           </button>
         </form>
 
-        {shown === "idle" && (
-          <div className={styles.message}>
-            <div>
-              <span className={styles.acc}>&gt;</span> awaiting token address
-            </div>
-            <div>usage: erc20 volume --token &lt;0x + 40 hex&gt; --blocks {blocks.length}</div>
-            <div>
-              <a
-                href="#"
-                className={styles.example}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setInput(EXAMPLE);
-                  run(EXAMPLE);
-                }}
-              >
-                load example: USDC
-              </a>
-            </div>
-          </div>
-        )}
-
-        {shown === "invalid" && (
-          <div className={styles.message}>
-            <div className={styles.alt}>ERR invalid address</div>
-            <div className={styles.muted}>expected 0x followed by 40 hexadecimal characters</div>
-          </div>
-        )}
-
-        {shown === "error" && (
-          <div className={styles.message}>
-            <div className={styles.alt}>ERR log query failed</div>
-            <div className={styles.muted}>{error}</div>
-          </div>
-        )}
-
-        {shown === "loading" && (
-          <div className={styles.message}>
-            <div>
-              <span className={styles.acc}>&gt;</span> scanning Transfer logs in blocks {blocks[0]?.n}–
-              {blocks[blocks.length - 1]?.n}…
-            </div>
-          </div>
-        )}
-
-        {shown === "ok" && token && (
-          <div className={styles.result}>
-            <div className={styles.resultHead}>
-              <span>
-                {token.slice(0, 6)}…{token.slice(-4)}
-              </span>
-              <span>TRANSFERS</span>
-            </div>
-            {rows.map((r) => (
-              <div key={r.n} className={styles.volRow}>
-                <span className={styles.volLabel}>#{r.n}</span>
-                <div className={styles.track}>
-                  <div
-                    className={styles.fill}
-                    style={{ width: `${(r.v / max) * 100}%`, opacity: selected !== null && selected !== r.n ? 0.3 : 1 }}
-                  />
-                </div>
-                <span className={styles.volVal}>{fmt(r.v)}</span>
+        <div className={styles.results}>
+          {shown === "idle" && (
+            <div className={styles.message}>
+              <div>
+                <span className={styles.acc}>&gt;</span> awaiting token address
               </div>
-            ))}
-            <div className={styles.total}>
-              <span className={styles.muted}>total</span>
-              <span className={styles.acc}>{fmt(total)}</span>
+              <div>usage: erc20 volume --token &lt;0x + 40 hex&gt; --blocks {blocks.length}</div>
+              <div>
+                <a
+                  href="#"
+                  className={styles.example}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setInput(EXAMPLE);
+                    run(EXAMPLE);
+                  }}
+                >
+                  load example: USDC
+                </a>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+
+          {shown === "invalid" && (
+            <div className={styles.message}>
+              <div className={styles.alt}>ERR invalid address</div>
+              <div className={styles.muted}>expected 0x followed by 40 hexadecimal characters</div>
+            </div>
+          )}
+
+          {shown === "error" && (
+            <div className={styles.message}>
+              <div className={styles.alt}>ERR log query failed</div>
+              <div className={styles.muted}>{error}</div>
+            </div>
+          )}
+
+          {shown === "loading" && (
+            <div className={styles.message}>
+              <div>
+                <span className={styles.acc}>&gt;</span> scanning Transfer logs in blocks {blocks[0]?.n}–
+                {blocks[blocks.length - 1]?.n}…
+              </div>
+            </div>
+          )}
+
+          {shown === "ok" && token && (
+            <div className={styles.result}>
+              <div className={styles.resultHead}>
+                <span>
+                  {token.slice(0, 6)}…{token.slice(-4)}
+                </span>
+                <span>TRANSFERS</span>
+              </div>
+              <div className={styles.list}>
+                {rows.map((r) => (
+                  <div key={r.n} className={styles.volRow}>
+                    <span className={styles.volLabel}>#{r.n}</span>
+                    <div className={styles.track}>
+                      <div
+                        className={styles.fill}
+                        style={{ width: `${(r.v / max) * 100}%`, opacity: selected !== null && selected !== r.n ? 0.3 : 1 }}
+                      />
+                    </div>
+                    <span className={styles.volVal}>{fmt(r.v)}</span>
+                  </div>
+                ))}
+              </div>
+              <div className={styles.total}>
+                <span className={styles.muted}>total</span>
+                <span className={styles.acc}>{fmt(total)}</span>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </Panel>
   );
