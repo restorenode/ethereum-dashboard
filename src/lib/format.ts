@@ -12,29 +12,31 @@ export const utcClock = (now: number | null) => {
   return `${p2(d.getUTCHours())}:${p2(d.getUTCMinutes())}:${p2(d.getUTCSeconds())} UTC`;
 };
 
-/**
- * Which x-axis labels to show: every other block counting back from the
- * latest (so the latest is always labeled), or only the selected block.
- */
-export const showXLabel = (i: number, count: number, isSelected: boolean, anySelected: boolean) =>
-  anySelected ? isSelected : (count - 1 - i) % 2 === 0;
+/** "…8977" — the last four digits of a block number, for axis labels. */
+export const shortBlock = (n: number) => "…" + String(n).slice(-4);
 
-const FEE_STEP = 0.05;
+const FEE_STEPS = [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1];
 
 /**
- * Base-fee axis: bounds padded by 0.01 and rounded out to 0.05, ticks on
- * clean 0.05 steps thinned to about five labels.
+ * Base-fee axis. The tick step adapts to the data (smallest step giving at
+ * most five intervals), bounds are padded by 0.3 steps and rounded out to a
+ * step, and ticks are thinned to about five labels.
  */
 export function feeScale(fees: number[]) {
-  // Work in whole 0.05 steps to avoid floating-point drift.
-  const loK = Math.max(0, Math.floor((Math.min(...fees) - 0.01) / FEE_STEP));
-  const hiK = Math.ceil((Math.max(...fees) + 0.01) / FEE_STEP);
+  const min = Math.min(...fees);
+  const max = Math.max(...fees);
+  const span = Math.max(max - min, max * 0.02);
+  const step = FEE_STEPS.find((s) => span / s <= 5) ?? 1;
+  const dec = step < 0.01 ? 3 : 2;
+  // Work in whole steps to avoid floating-point drift.
+  const loK = Math.max(0, Math.floor((min - 0.3 * step) / step));
+  const hiK = Math.ceil((max + 0.3 * step) / step);
   const steps = hiK - loK;
   const every = Math.ceil(steps / 5);
   const ticks: { v: number; label: string }[] = [];
   for (let k = 0; k <= steps; k += every) {
-    const v = (hiK - k) * FEE_STEP;
-    ticks.push({ v, label: v.toFixed(2) });
+    const v = (hiK - k) * step;
+    ticks.push({ v, label: v.toFixed(dec) });
   }
-  return { lo: loK * FEE_STEP, hi: hiK * FEE_STEP, ticks };
+  return { lo: loK * step, hi: hiK * step, ticks };
 }
