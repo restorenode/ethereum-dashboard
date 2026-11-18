@@ -6,12 +6,11 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint ."
   },
   "dependencies": {
-    "alchemy-sdk": "^3.5.1",
-    "ethers": "^6.13.5",
-    "next": "15.1.6",
+    "alchemy-sdk": "3.5.1",
+    "next": "15.5.29",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
@@ -21,8 +20,11 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "15.1.6",
+    "eslint-config-next": "15.5.29",
     "sass": "^1.97.1",
     "typescript": "^5"
+  },
+  "overrides": {
+    "ws": "^8.23.0"
   }
 }
