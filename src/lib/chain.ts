@@ -2,15 +2,15 @@
 
 import { useEffect, useState } from "react";
 import type { Block } from "alchemy-sdk";
-import { id } from "ethers";
-import alchemy from "@/lib/alchemy";
+import alchemy, { missingKeyError } from "@/lib/alchemy";
 
 /** Most blocks kept on screen; the window grows to this as new blocks arrive. */
 export const WINDOW = 10;
 /** Blocks fetched when the page loads (or resumes after a pause). */
 const INITIAL = 5;
 
-const TRANSFER_TOPIC = id("Transfer(address,address,uint256)");
+/** keccak256("Transfer(address,address,uint256)"), the ERC20 Transfer event signature. */
+const TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
 
 export type BlockRow = {
   n: number;
@@ -51,6 +51,10 @@ export function useBlocks(live: boolean) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (missingKeyError) {
+      setError(missingKeyError);
+      return;
+    }
     if (!live) return;
     let cancelled = false;
 
